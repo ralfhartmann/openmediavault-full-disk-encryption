@@ -119,7 +119,7 @@ Select your usb stick at bios boot to use this instead of the hdd.
 Enable `sshd`, if not enabled.
 
 ```sh
-apt update && apt install openssh-server
+sudo apt update && sudo apt install openssh-server
 sudo passwd root
 sudo su - root
 ```
