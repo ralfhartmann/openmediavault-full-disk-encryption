@@ -24,7 +24,7 @@ Follow the documentation: https://openmediavault.readthedocs.io/en/latest/instal
 
 - Set admin ui password
 - if needed change admin ui port
-- copy your pub key for user root (`ssh-copy-id root@<ip>`)
+- copy your pub key for user root (`ssh-copy-id [-i keyfile.pub] root@<ip>`)
 - disable ssh password login
 - update to latest state (`apt update && apt dist-upgrade`)
 
