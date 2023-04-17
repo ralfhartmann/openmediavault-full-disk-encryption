@@ -97,19 +97,18 @@ In order to encrypt the omv drive, we need to save the OS drive and repartition
 the device with `luks`.
 
 To get an overview of the partitions to migrate use `lsblk`. In my case the OS
-drive is `sde`.
+drive is `sda`.
 
 ```sh
-# lsblk
-NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-sda      8:0    0   3.7T  0 disk
-sdb      8:16   0   3.7T  0 disk
-sdc      8:32   0   3.7T  0 disk
-sdd      8:48   0   3.7T  0 disk
-sde      8:64   0 119.2G  0 disk
-|-sde1   8:65   0 103.4G  0 part /
-|-sde2   8:66   0     1K  0 part
-`-sde5   8:69   0  15.9G  0 part [SWAP]
+root@debian:~# lsblk
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+loop0    7:0    0  2,3G  1 loop /usr/lib/live/mount/rootfs/filesystem.squashfs
+sda      8:0    0  128G  0 disk 
+├─sda1   8:1    0  127G  0 part 
+├─sda2   8:2    0    1K  0 part 
+└─sda5   8:5    0  975M  0 part 
+sdb      8:16   0  256G  0 disk 
+sr0     11:0    1  2,8G  0 rom  /run/live/medium
 ```
 
 OMV creates those by default. We do want to change this to
@@ -150,7 +149,7 @@ is rather small in size, this should not take too long.
 
 ```sh
 mkdir /oldroot
-mount /dev/sde1 /mnt
+mount /dev/sda1 /mnt
 rsync -a /mnt/ /oldroot/
 umount /mnt
 ```
@@ -162,7 +161,7 @@ Now that we have a local backup, it is possible to encrypt the drive.
 > make sure you select the correct device `/dev/sdx#`
 
 ```sh
-cfdisk /dev/sde
+cfdisk /dev/sda
 ```
 
 A screen opens, where all partitions are deleted.
@@ -184,27 +183,27 @@ Do not forget to write the changes
 Check the partitions with `lsblk` and make the boot filesystem
 
 ```sh
-mkfs.ext4 /dev/sde1
+mkfs.ext4 /dev/sda1
 ```
 
-Now let's encrypt the root partition `sde3` and choosing a strong crypt key.
+Now let's encrypt the root partition `sda3` and choosing a strong crypt key.
 
 ```sh
 apt update && apt install cryptsetup
 modprobe dm-crypt
-cryptsetup --cipher aes-xts-plain64 -s 512 -h sha256 --iter-time 5000 luksFormat /dev/sde3
+cryptsetup --cipher aes-xts-plain64 -s 512 -h sha256 --iter-time 5000 luksFormat /dev/sda3
 ```
 
 Verify it worked with
 
 ```sh
-cryptsetup luksDump /dev/sde3
+cryptsetup luksDump /dev/sda3
 ```
 
 Lets open the drive and create a filesystem
 
 ```sh
-cryptsetup luksOpen /dev/sde3 root
+cryptsetup luksOpen /dev/sda3 root
 mke2fs -t ext4 /dev/mapper/root
 ```
 
@@ -213,7 +212,7 @@ mke2fs -t ext4 /dev/mapper/root
 ```sh
 mkdir /newroot
 mount /dev/mapper/root /newroot
-mount /dev/sde1 /newroot/boot
+mount /dev/sda1 /newroot/boot
 rsync -a /oldroot/ /newroot/
 ```
 
@@ -230,13 +229,13 @@ Next we will update everything
 
 ```sh
 /etc/fstab:
-UUID=<uuid of /dev/sde1> /boot ext4 defaults 0 1
+UUID=<uuid of /dev/sda1> /boot ext4 defaults 0 1
 /dev/mapper/root / ext4 defaults 0 2
-# swap was on /dev/sde5 during installation
-/dev/sde2 none            swap    sw              0       0
+# swap was on /dev/sda5 during installation
+/dev/sda2 none            swap    sw              0       0
 ```
 
-Use UUID to make sure the correct drive is mounted (`blkid /dev/sde3`)
+Use UUID to make sure the correct drive is mounted (`blkid /dev/sda3`)
 
 ```sh
 /etc/crypttab:
@@ -255,7 +254,7 @@ Update `/boot`
 ```sh
 update-initramfs -u -k all
 update-grub
-grub-install /dev/sde
+grub-install /dev/sda
 ```
 
 > `pre-up` lead to not working network with me. Just as a reminder...
@@ -313,7 +312,7 @@ find the unique partition and use it as swap (UUID is always different, so not
 usable)
 
 ```sh
-find -L /dev/disk -samefile /dev/sde2
+find -L /dev/disk -samefile /dev/sda2
 ```
 
 ```sh
