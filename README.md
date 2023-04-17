@@ -190,7 +190,7 @@ Now let's encrypt the root partition `sda3` and choosing a strong crypt key.
 ```sh
 apt update && apt install cryptsetup
 modprobe dm-crypt
-cryptsetup --cipher aes-xts-plain64 -s 512 -h sha256 --iter-time 5000 luksFormat /dev/sda3
+cryptsetup --cipher aes-xts-plain64 -s 512 -h sha256 --iter-time 5000 --label OMV luksFormat /dev/sda3
 ```
 
 Verify it worked with
