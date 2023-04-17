@@ -100,15 +100,14 @@ To get an overview of the partitions to migrate use `lsblk`. In my case the OS
 drive is `sda`.
 
 ```sh
-root@debian:~# lsblk
+# lsblk 
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-loop0    7:0    0  2,3G  1 loop /usr/lib/live/mount/rootfs/filesystem.squashfs
 sda      8:0    0  128G  0 disk 
-├─sda1   8:1    0  127G  0 part 
+├─sda1   8:1    0  127G  0 part /
 ├─sda2   8:2    0    1K  0 part 
-└─sda5   8:5    0  975M  0 part 
+└─sda5   8:5    0  975M  0 part [SWAP]
 sdb      8:16   0  256G  0 disk 
-sr0     11:0    1  2,8G  0 rom  /run/live/medium
+sr0     11:0    1  2.8G  0 rom  
 ```
 
 OMV creates those by default. We do want to change this to
