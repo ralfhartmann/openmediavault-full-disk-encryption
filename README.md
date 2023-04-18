@@ -33,12 +33,11 @@ Follow the documentation: https://openmediavault.readthedocs.io/en/latest/instal
 Make sure following packages are present
 
 ```sh
-apt install cryptsetup
-apt install busybox dropbear
+apt install cryptsetup-initramfs
+apt install busybox-static dropbear-initramfs
 ```
 
-> please refer to `/usr/share/doc/dropbear-initramfs/README.initramfs` and
-> `/usr/share/doc/cryptsetup/README.Debian.gz` Section 8
+> please refer to `/usr/share/doc/dropbear-initramfs/README.initramfs` and `/usr/share/doc/cryptsetup/README.Debian.gz` Section 8
 
 extend `/etc/initramfs-tools/initramfs.conf`
 
