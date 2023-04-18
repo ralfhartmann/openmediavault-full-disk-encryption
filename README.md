@@ -42,14 +42,14 @@ apt install busybox-static dropbear-initramfs
 extend `/etc/initramfs-tools/initramfs.conf`
 
 ```sh
-DEVICE=enp2s0
-IP=$yourIP::$routerIP:255.255.255.0:$yourHostname:eth0:off
 DROPBEAR=y
 ```
 
 I am on a local lan and with port forwarding I do not want to expose dropbear to the
-net. There I add `DROPBEAR_OPTIONS="-p 2222"` to `/etc/dropbear-initramfs/config`
-to change the listening port to 2222.
+net. There I add `DROPBEAR_OPTIONS="-I 180 -j -k -p 2222 -s -c cryptroot-unlock"` to `/etc/dropbear-initramfs/config`
+to change the listening port to 2222. (see https://www.cyberciti.biz/security/how-to-unlock-luks-using-dropbear-ssh-keys-remotely-in-linux/)
+
+DROPBEAR_OPTIONS="-I 180 -j -k -p 2222 -s -c cryptroot-unlock"
 
 Now paste your public ssh key to the `authorized_keys` file.
 
